@@ -81,7 +81,7 @@ export default function Index() {
           Aleatrio
         </button>
         <input
-          className="border-gray-300 border-dashed p-2"
+          className="border-2 rounded border-gray-300  p-2"
           type="number"
           value={randomItems}
           onChange={onRandomItems}

@@ -24,8 +24,8 @@ export default function Game() {
     }
     return shuffleArray([...decodeCountries]);
   };
-  const [shuffledCountries, setShuffledCountries] = useState(
-    checkShuffledCountries
+  const [shuffledCountries, setShuffledCountries] = useState<typeof countries>(
+    []
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState({ correct: 0, incorrect: 0 });
@@ -64,9 +64,7 @@ export default function Game() {
   if (currentIndex >= shuffledCountries.length) {
     return (
       <div className="flex flex-col items-center center min-h-screen">
-        {score.incorrect === 0 && (
-          <Confetti width={window.innerWidth} height={window.innerHeight} />
-        )}
+        {score.incorrect === 0 && <Confetti width={400} height={400} />}
         <h1 className="text-4xl font-bold mb-4">Quiz terminado</h1>
         <div className="text-center mb-4">
           <p className="text-xl text-green-600">
