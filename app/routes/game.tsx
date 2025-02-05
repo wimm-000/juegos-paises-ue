@@ -61,10 +61,22 @@ export default function Game() {
     setScore({ correct: 0, incorrect: 0 });
   };
 
+  const restartWithErrors = () => {
+    localStorage.setItem(countriesKey, JSON.stringify(incorectAnswers));
+    setCurrentIndex(0);
+    setScore({ correct: 0, incorrect: 0 });
+    setSelectedCountry("");
+    setSelectedCapital("");
+    setIncorrectAnswers([]);
+    setShuffledCountries(checkShuffledCountries);
+  };
+
   if (currentIndex >= shuffledCountries.length) {
     return (
       <div className="flex flex-col items-center center min-h-screen">
-        {score.incorrect === 0 && <Confetti width={400} height={400} />}
+        {score.incorrect === 0 && (
+          <Confetti width={window.innerWidth} height={window.innerHeight} />
+        )}
         <h1 className="text-4xl font-bold mb-4">Quiz terminado</h1>
         <div className="text-center mb-4">
           <p className="text-xl text-green-600">
@@ -83,6 +95,12 @@ export default function Game() {
         >
           Reiniciar
         </Link>
+        <button
+          className="m-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+          onClick={restartWithErrors}
+        >
+          Reiniciar con los errores
+        </button>
       </div>
     );
   }
