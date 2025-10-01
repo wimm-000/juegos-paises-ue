@@ -96,6 +96,16 @@ export default function Index() {
           Seleccionar todo
         </button>
         <button
+          onClick={() => {
+            const first25 = sortedCountries(currentCountries).slice(0, 25);
+            setSelectedCountries(first25);
+            localStorage.setItem(countriesKey, JSON.stringify(first25));
+          }}
+          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-700"
+        >
+          Primeros 25
+        </button>
+        <button
           onClick={onClear}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
         >
