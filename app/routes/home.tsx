@@ -1,18 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { countriesKey } from "~/constants/storageKeys";
-import { countries } from "~/utils/countries";
+import { countriesKey, regionKey } from "~/constants/storageKeys";
+import { euCountries, allEuropeanCountries } from "~/utils/countries";
 import { sortedCountries } from "~/utils/sort";
+import type { Region } from "./region";
 
 export default function Index() {
-  const [selectedCountries, setSelectedCountries] = useState<typeof countries>(
+  const [selectedCountries, setSelectedCountries] = useState<typeof euCountries>(
     []
   );
   const [randomItems, setRandomItems] = useState(5);
+  const [region, setRegion] = useState<Region>("eu");
 
   const navigate = useNavigate();
 
+  // Get countries based on selected region
+  const getCountriesForRegion = (selectedRegion: Region) => {
+    return selectedRegion === "eu" ? euCountries : allEuropeanCountries;
+  };
+
+  const currentCountries = getCountriesForRegion(region);
+
   useEffect(() => {
+    // Load selected region
+    const storedRegion = localStorage.getItem(regionKey) as Region;
+    if (storedRegion) {
+      setRegion(storedRegion);
+    }
+
+    // Load selected countries
     setSelectedCountries(() => {
       const storedCountries = localStorage.getItem(countriesKey);
       const decodeCountries = JSON.parse(storedCountries || "[]");
@@ -20,7 +36,7 @@ export default function Index() {
     });
   }, []);
 
-  const handleCheckboxChange = (country: (typeof countries)[0]) => {
+  const handleCheckboxChange = (country: (typeof currentCountries)[0]) => {
     const currentlySelected = selectedCountries.find(
       (c) => c.name === country.name
     )
@@ -34,8 +50,8 @@ export default function Index() {
   };
 
   const onSelectAll = () => {
-    setSelectedCountries(countries);
-    localStorage.setItem(countriesKey, JSON.stringify(countries));
+    setSelectedCountries(currentCountries);
+    localStorage.setItem(countriesKey, JSON.stringify(currentCountries));
   };
 
   const onClear = () => {
@@ -48,7 +64,7 @@ export default function Index() {
   };
 
   const getRandomCountries = (num: number) => {
-    const shuffled = countries.sort(() => 0.5 - Math.random());
+    const shuffled = currentCountries.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, num);
   };
 
@@ -60,7 +76,18 @@ export default function Index() {
 
   return (
     <div className="flex flex-col items-center  h-screen">
-      <h1 className="text-2xl font-bold mb-4">Selecciona las banderas</h1>
+      <div className="flex items-center gap-4 mb-4">
+        <h1 className="text-2xl font-bold">Selecciona las banderas</h1>
+        <span className="text-lg text-gray-600">
+          ({region === "eu" ? "Unión Europea" : "Toda Europa"} - {currentCountries.length} países)
+        </span>
+        <Link
+          to="/"
+          className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 text-sm"
+        >
+          Cambiar región
+        </Link>
+      </div>
       <div className="flex gap-2 pb-8">
         <button
           onClick={onSelectAll}
@@ -85,10 +112,12 @@ export default function Index() {
           type="number"
           value={randomItems}
           onChange={onRandomItems}
+          placeholder="Número de países"
+          aria-label="Número de países aleatorios"
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {sortedCountries(countries).map((country) => (
+        {sortedCountries(currentCountries).map((country) => (
           <label
             key={country.name}
             className="flex items-center justify-center p-2 cursor-pointer"
